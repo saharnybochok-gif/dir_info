@@ -1,5 +1,3 @@
-use std::fmt::format;
-
 mod colors;
 
 fn print(entries: std::fs::ReadDir, path: String) {
