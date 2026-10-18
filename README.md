@@ -7,7 +7,7 @@
 Откройте терминал (cmd или PowerShell) в папке с утилитой и напишите (вместо `C:\Windows` вы можете написать другой путь):
 
 ```powershell
-dir_info.exe C:\Windows
+dir_info.exe C:\Windows\Temp
 ```
 
 ![Пример работы](image.png)
