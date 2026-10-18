@@ -2,45 +2,61 @@ use std::{fs::FileType, os::windows::fs::FileTypeExt};
 
 mod colors;
 
-fn format_size(meta_len: u64, ft: FileType) -> String {
-    if ft.is_dir() || ft.is_symlink_dir() {
-        format!("<DIR>")
-    } else if meta_len < 1024 {
-        format!("{:.1} Б", meta_len as f64)
+fn format_size(meta_len: u64) -> String {
+    if meta_len < 1024 {
+        format!("{}{:.1} Б{}", colors::VALUE, meta_len as f64, colors::RESET)
     } else if meta_len < 1024 * 1024 {
-        format!("{:.1} КБ", meta_len as f64 / 1024.0)
+        format!(
+            "{}{:.1} КБ{}",
+            colors::VALUE,
+            meta_len as f64 / 1024.0,
+            colors::RESET
+        )
     } else if meta_len < 1024 * 1024 * 1024 {
-        format!("{:.1} МБ", meta_len as f64 / (1024.0 * 1024.0))
+        format!(
+            "{}{:.1} МБ{}",
+            colors::VALUE,
+            meta_len as f64 / (1024.0 * 1024.0),
+            colors::RESET
+        )
     } else {
-        format!("{:.1} ГБ", meta_len as f64 / (1024.0 * 1024.0 * 1024.0))
+        format!(
+            "{}{:.1} ГБ{}",
+            colors::VALUE,
+            meta_len as f64 / (1024.0 * 1024.0 * 1024.0),
+            colors::RESET
+        )
     }
 }
 
 fn format_file_type(ft: FileType) -> String {
     if ft.is_dir() {
-        format!("{}[dir]{}         ", colors::FILE_TYPE, colors::RESET)
+        format!("{}[dir]{}         ", colors::DIR, colors::RESET)
     } else if ft.is_file() {
-        format!("{}[file]{}        ", colors::FILE_TYPE, colors::RESET)
+        format!("{}[file]{}        ", colors::FILE, colors::RESET)
     } else if ft.is_symlink_dir() {
-        format!("{}[symlink_dir]{} ", colors::FILE_TYPE, colors::RESET)
+        format!("{}[symlink_dir]{} ", colors::DIR, colors::RESET)
     } else if ft.is_symlink_file() {
-        format!("{}[symlink_file]{}", colors::FILE_TYPE, colors::RESET)
+        format!("{}[symlink_file]{}", colors::FILE, colors::RESET)
     } else if ft.is_symlink() {
-        format!("{}[symlink]{}     ", colors::FILE_TYPE, colors::RESET)
+        format!("{}[symlink]{}     ", colors::FILE, colors::RESET)
     } else {
-        format!("{}[unknown]{}     ", colors::FILE_TYPE, colors::RESET)
+        format!("{}[unknown]{}     ", colors::FILE, colors::RESET)
     }
 }
 
 fn print(entries: std::fs::ReadDir, path: String) {
     println!(
-        "{}Информация о папке (путь: {path:?})\n{}",
+        "{}Информация о директории (путь: {path:?})\n{}",
         colors::SUCCESS,
         colors::RESET
     );
 
+    let start = std::time::Instant::now();
     let mut files: Vec<(String, String, String)> = Vec::new();
     let mut max_len: usize = 0;
+    let mut file_count = 0;
+    let mut directory_count = 0;
 
     for entry in entries {
         let Ok(file) = entry else {
@@ -58,7 +74,13 @@ fn print(entries: std::fs::ReadDir, path: String) {
             max_len = name_str.len();
         }
 
-        let size: String = format_size(meta.len(), ft);
+        let size: String = if ft.is_dir() || ft.is_symlink_dir() {
+            directory_count += 1;
+            format!("{}<DIR>{}", colors::VALUE, colors::RESET)
+        } else {
+            file_count += 1;
+            format_size(meta.len())
+        };
 
         let file_type = format_file_type(ft);
         files.push((file_type, name_str, size));
@@ -78,6 +100,24 @@ fn print(entries: std::fs::ReadDir, path: String) {
             width = max_len + 2
         );
     }
+    println!(
+        "\n{}количество файлов: {}{}\n{}количество директорий: {}{}{}",
+        colors::NOTE,
+        colors::VALUE,
+        file_count,
+        colors::NOTE,
+        colors::VALUE,
+        directory_count,
+        colors::RESET
+    );
+
+    println!(
+        "\n{}Выполнено за {}{:?}{}",
+        colors::SUCCESS,
+        colors::VALUE,
+        start.elapsed(),
+        colors::RESET
+    );
 }
 
 fn main() {
