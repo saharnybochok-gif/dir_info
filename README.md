@@ -10,4 +10,4 @@
 dir_info.exe C:\Windows\Temp
 ```
 
-![Пример работы](image.png)
+![](image.png)
