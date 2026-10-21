@@ -57,6 +57,7 @@ fn print(entries: std::fs::ReadDir, path: String) {
     let mut max_len: usize = 0;
     let mut file_count = 0;
     let mut directory_count = 0;
+    let mut total_size: u64 = 0;
 
     for entry in entries {
         let Ok(file) = entry else {
@@ -77,14 +78,20 @@ fn print(entries: std::fs::ReadDir, path: String) {
         let size: String = if ft.is_dir() || ft.is_symlink_dir() {
             directory_count += 1;
             format!("{}<DIR>{}", colors::VALUE, colors::RESET)
+        } else if ft.is_symlink() {
+            file_count += 1;
+            format_size(meta.len())
         } else {
             file_count += 1;
+            total_size += meta.len();
             format_size(meta.len())
         };
 
         let file_type = format_file_type(ft);
         files.push((file_type, name_str, size));
     }
+
+    let total_size = format_size(total_size);
 
     for (file_type, name, size) in files {
         println!(
@@ -101,13 +108,15 @@ fn print(entries: std::fs::ReadDir, path: String) {
         );
     }
     println!(
-        "\n{}количество файлов: {}{}\n{}количество директорий: {}{}{}",
+        "\n{}количество файлов: {}{}\n{}количество директорий: {}{}\n{}общий размер файлов: {}{}",
         colors::NOTE,
         colors::VALUE,
         file_count,
         colors::NOTE,
         colors::VALUE,
         directory_count,
+        colors::NOTE,
+        total_size,
         colors::RESET
     );
 
