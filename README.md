@@ -7,7 +7,18 @@
 Откройте терминал (cmd или PowerShell) в папке с утилитой и напишите (вместо `C:\Windows` вы можете написать другой путь):
 
 ```powershell
-dir_info.exe C:\Windows\Temp
+dir_info C:\Windows\Temp
 ```
 
 ![](image.png)
+
+## Флаги
+
+Чтобы показать версию утилиты, вы можете написать флаг `--version` или `-v`
+```powershell
+dir_info --version
+```
+
+```powershell
+dir_info -v
+```
