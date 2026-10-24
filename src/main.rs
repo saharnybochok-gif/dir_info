@@ -131,11 +131,11 @@ fn print(entries: std::fs::ReadDir, path: String) {
 
 fn main() {
     let mut args = std::env::args();
-    let path = match args.nth(1) {
-        Some(path) => path,
+    let arg = match args.nth(1) {
+        Some(arg) => arg,
         None => {
             eprintln!(
-                "{}Ошибка: вы не указали путь в аргументах при вызове утилиты.\n{}Помощь: вместо dir_info, напишите dir_info <путь> (например: dir_info C:\\Windows).{}",
+                "{}Ошибка: вы не указали аргумент при вызове утилиты.\n{}Помощь: вместо dir_info, напишите dir_info <путь> (либо какой-нибудь флаг, например: dir_info C:\\Windows).{}",
                 colors::ERROR,
                 colors::HELP,
                 colors::RESET
@@ -144,9 +144,17 @@ fn main() {
         }
     };
 
-    match std::fs::read_dir(&path) {
+    match arg.as_str() {
+        "--version" | "-v" => {
+            println!("{}", std::env!("CARGO_PKG_VERSION"));
+            std::process::exit(0);
+        }
+        _ => (),
+    }
+
+    match std::fs::read_dir(&arg) {
         Ok(entries) => {
-            print(entries, path);
+            print(entries, arg);
         }
         Err(e) => {
             eprintln!(
