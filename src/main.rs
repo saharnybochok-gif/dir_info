@@ -131,11 +131,12 @@ fn print(entries: std::fs::ReadDir, path: String) {
 
 fn main() {
     let mut args = std::env::args();
+
     let arg = match args.nth(1) {
         Some(arg) => arg,
         None => {
             eprintln!(
-                "{}Ошибка: вы не указали аргумент при вызове утилиты.\n{}Помощь: вместо dir_info, напишите dir_info <путь> (либо какой-нибудь флаг, например: dir_info C:\\Windows).{}",
+                "{}Ошибка: произошла ошибка при получении аргумента.\n{}Помощь: Убедитесь то что вы указали аргумент (dir_info <arg>){}",
                 colors::ERROR,
                 colors::HELP,
                 colors::RESET
@@ -145,8 +146,21 @@ fn main() {
     };
 
     match arg.as_str() {
-        "--version" | "-v" => {
-            println!("{}", std::env!("CARGO_PKG_VERSION"));
+        "-v" | "--version" => {
+            println!("{}", env!("CARGO_PKG_VERSION"));
+            std::process::exit(0);
+        }
+        "-h" | "--help" => {
+            println!(
+                "Dir_info - Консольная утилита на Rust для просмотра информации о файлах и папках в директории для Windows."
+            );
+            println!(
+                "Скачайте 'dir_info.exe' из раздела Releases, затем добавьте в переменную окружения.\nОткройте терминал (cmd или PowerShell) в папке с утилитой и напишите (вместо `C:\\Windows` вы можете написать другой путь):"
+            );
+            println!("dir_info C:\\Windows\\Temp");
+            println!(
+                "Остальные флаги: -v или --version - показывают версию dir_info, -h или --help - показывают информацию о утилите и как ей пользоваться."
+            );
             std::process::exit(0);
         }
         _ => (),
