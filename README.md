@@ -14,11 +14,19 @@ dir_info C:\Windows\Temp
 
 ## Флаги
 
-Чтобы показать версию утилиты, вы можете написать флаг `--version` или `-v`
+Чтобы показать версию утилиты, вы можете написать флаг `--version` или `-v`:
 ```powershell
 dir_info --version
 ```
 
 ```powershell
 dir_info -v
+```
+Если вам нужна помощь, вы можете написать флаг `--help` или `-h`:
+```powershell
+dir_info --help
+```
+
+```powershell
+dir_info -h
 ```
